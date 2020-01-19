@@ -10,6 +10,7 @@ import { MessageType as RoutingMessageType } from '../protocols/routing/messages
 import { MessageType as TrustPingMessageType } from '../protocols/trustping/messages';
 import { ProviderRoutingService } from '../protocols/routing/ProviderRoutingService';
 import { BasicMessageService } from '../protocols/basicmessage/BasicMessageService';
+import { BasicMessageRepository } from '../protocols/basicmessage/BasicMessageRepository';
 import { ConsumerRoutingService } from '../protocols/routing/ConsumerRoutingService';
 import { Context } from './Context';
 import { MessageReceiver } from './MessageReceiver';
@@ -54,8 +55,9 @@ export class Agent {
       messageSender,
     };
 
+    const basicMessageRepository = new BasicMessageRepository();
     this.connectionService = new ConnectionService(this.context);
-    this.basicMessageService = new BasicMessageService();
+    this.basicMessageService = new BasicMessageService(basicMessageRepository);
     this.providerRoutingService = new ProviderRoutingService();
     this.consumerRoutingService = new ConsumerRoutingService(this.context);
     this.trustPingService = new TrustPingService();
@@ -116,6 +118,10 @@ export class Agent {
 
   getConnections() {
     return this.connectionService.getConnections();
+  }
+
+  getBasicMessages() {
+    return this.basicMessageService.getMessages();
   }
 
   findConnectionByMyKey(verkey: Verkey) {
